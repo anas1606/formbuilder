@@ -20,6 +20,17 @@ export class EditAppComponent implements OnInit {
   fieldModels:Array<field>=[
     {
       "type": "text",
+      "icon": "fa-th",
+      "label": "Section",
+      "description": "Enter your name",
+      "placeholder": "Enter your name",
+      "className": "form-control",
+      "subtype": "text",
+      "regex" : "",
+      "handle":true
+    },
+    {
+      "type": "text",
       "icon": "fa-font",
       "label": "Text",
       "description": "Enter your name",
@@ -163,8 +174,7 @@ export class EditAppComponent implements OnInit {
 
   modelFields:Array<field>=[];
   model:any = {
-    name:'App name...',
-    description:'App Description...',
+    name:'New Form',
     theme:{
       bgColor:"ffffff",
       textColor:"555555",
@@ -277,6 +287,9 @@ export class EditAppComponent implements OnInit {
     // });
   }
 
+  clearForm(){
+    this.model.attributes = [];
+  }
 
   initReport(){
     this.report = true; 

@@ -1,0 +1,19 @@
+.container{
+    padding-top: 10px;
+    padding-left: 0%;
+    padding-right: 0%;
+}
+h1{
+    color: white;
+    text-align: center;
+    padding: 5px;
+}
+header {
+    background-color: rgb(44, 83, 167);
+	text-align: center;
+    width: auto;
+    padding: 1px;
+}
+.body{
+    background-color: whitesmoke;
+}

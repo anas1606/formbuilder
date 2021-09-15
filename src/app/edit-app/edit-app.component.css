@@ -1,0 +1,31 @@
+.formName-div{
+    padding-left: 3%;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background-color: rgb(44, 83, 167);
+    align-items: center;
+    color: white;
+    width: auto;
+}
+.formName{
+    width: 40ch;
+    border-style: dashed;
+    color: white;
+    border-radius: 12mm;
+    margin-left: 3%;
+}
+.properties-heading{
+    background-color: rgb(6, 6, 37);
+    text-align: center;
+    color: honeydew;
+}
+.draw-section{
+    border-color: black;
+    border-style: dashed;
+    height: 70%;
+    max-height: 70%;
+    overflow-y: auto;
+}
+.pad{
+    padding-left: 3%;
+}
