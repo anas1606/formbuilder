@@ -28,9 +28,12 @@ mat-sidenav {
   color: lightgray;
 }
 
+.field-flex{
+    display: flex;
+}
+
 .field {
   align-items: center;
-  display: flex;
   justify-content: flex-start;
 }
 
