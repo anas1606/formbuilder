@@ -1,19 +1,75 @@
-.container{
-    padding-top: 10px;
-    padding-left: 0%;
-    padding-right: 0%;
+mat-toolbar {
+  background: #002b5c;
+  color: white;
 }
+
+mat-sidenav {
+  margin: 16px;
+  width: 200px;
+  border-right: none;
+  background: #002b5c;
+  color: white;
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+}
+
+.content {
+  height: calc(100vh - 98px);
+  border-radius: 10px;
+  margin: 16px;
+  margin-left: 32px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 2rem;
+  color: lightgray;
+}
+
+.menu-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  font-size: 1rem;
+}
+
+.avatar {
+  margin-top: 16px;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+}
+
+.name {
+  margin-top: 8px;
+  font-weight: normal;
+}
+
+.designation {
+  margin-top: 2px;
+  font-size: 0.7rem;
+  color: lightgrey;
+}
+
+mat-divider {
+  margin-top: 16px;
+  margin-bottom: 16px;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+mat-sidenav-container {
+  height: calc(100vh - 65px);
+}
+
 h1{
-    color: white;
-    text-align: center;
-    padding: 5px;
+  font-size : 28px;
+  padding-left: 10px;
 }
-header {
-    background-color: rgb(44, 83, 167);
-	text-align: center;
-    width: auto;
-    padding: 1px;
-}
-.body{
-    background-color: whitesmoke;
+
+.save{
+  background-color :green;
+  padding : 5px;
+  color : white
 }

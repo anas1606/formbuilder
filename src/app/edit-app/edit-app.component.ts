@@ -1,8 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { DndDropEvent,DropEffect} from 'ngx-drag-drop';
 import { field, value } from '../global.model';
 import { ActivatedRoute } from '@angular/router';
 import swal from 'sweetalert2';
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { MatSidenav } from '@angular/material/sidenav';
+import { delay } from 'rxjs/operators';
 
 @Component({
   selector: 'app-edit-app',
@@ -10,6 +13,9 @@ import swal from 'sweetalert2';
   styleUrls: ['./edit-app.component.css']
 })
 export class EditAppComponent implements OnInit {
+
+  @ViewChild(MatSidenav)
+  sidenav!: MatSidenav;
 
   value:value={
     label:"",
@@ -93,13 +99,13 @@ export class EditAppComponent implements OnInit {
     {
       "type": "textarea",
       "icon":"fa-text-width",
-      "label": "Textarea" 
+      "label": "Textarea"
     },
     {
       "type": "paragraph",
       "icon": "fa-paragraph",
       "label": "Paragraph",
-      "placeholder": "Type your text to display here only" 
+      "placeholder": "Type your text to display here only"
     },
     {
       "type": "checkbox",
@@ -187,8 +193,24 @@ export class EditAppComponent implements OnInit {
   reports:any = [];
 
   constructor(
+    private observer: BreakpointObserver,
     private route:ActivatedRoute
   ) { }
+
+  ngAfterViewInit() {
+    this.observer
+      .observe(['(max-width: 700px)'])
+      .pipe(delay(1))
+      .subscribe((res) => {
+        if (res.matches) {
+          this.sidenav.mode = 'over';
+          this.sidenav.close();
+        } else {
+          this.sidenav.mode = 'side';
+          this.sidenav.open();
+        }
+      });
+  }
 
   ngOnInit() {
     // this.route.params.subscribe( params =>{
@@ -200,7 +222,7 @@ export class EditAppComponent implements OnInit {
     // });
 
 
-    // this.model = this.cs.data; 
+    // this.model = this.cs.data;
     // console.log(this.model.data);
 
   }
@@ -208,37 +230,37 @@ export class EditAppComponent implements OnInit {
   onDragStart(event:DragEvent) {
     console.log("drag started", JSON.stringify(event, null, 2));
   }
-  
+
   onDragEnd(event:DragEvent) {
     console.log("drag ended", JSON.stringify(event, null, 2));
   }
-  
+
   onDraggableCopied(event:DragEvent) {
     console.log("draggable copied", JSON.stringify(event, null, 2));
   }
-  
+
   onDraggableLinked(event:DragEvent) {
     console.log("draggable linked", JSON.stringify(event, null, 2));
   }
-    
+
    onDragged( item:any, list:any[], effect:DropEffect ) {
     if( effect === "move" ) {
       const index = list.indexOf( item );
       list.splice( index, 1 );
     }
   }
-      
+
   onDragCanceled(event:DragEvent) {
     console.log("drag cancelled", JSON.stringify(event, null, 2));
   }
-  
+
   onDragover(event:DragEvent) {
     console.log("dragover", JSON.stringify(event, null, 2));
   }
-  
+
   onDrop( event:DndDropEvent, list?:any[] ) {
     if( list && (event.dropEffect === "copy" || event.dropEffect === "move") ) {
-      
+
       if(event.dropEffect === "copy")
       event.data.name = event.data.type+'-'+new Date().getTime();
       let index = event.index;
@@ -292,7 +314,7 @@ export class EditAppComponent implements OnInit {
   }
 
   initReport(){
-    this.report = true; 
+    this.report = true;
     let input = {
       id:this.model._id
     }
