@@ -81,12 +81,6 @@ h1 {
   padding: 5px;
 }
 
-.properties-heading {
-  background-color: rgb(6, 6, 37);
-  text-align: center;
-  color: honeydew;
-}
-
 .draw-section {
   border-color: white;
   border-style: dashed;
@@ -99,8 +93,13 @@ h1 {
 .form-control {
   width: 100%;
   color: white;
+  background-color: transparent;
 }
 
 .pad {
   padding-left: 3%;
+}
+
+.green{
+  color: green;
 }

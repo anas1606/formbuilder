@@ -1,28 +1,40 @@
-export class field{
-  _id?:any;
-  name?:any;
-  type?:any;
-  icon?:any;
-  toggle?:any;
-  required?:any;
-  regex?:any;
-  errorText?:any;
-  label?:any;
-  description?:any;
-  placeholder?:any;
-  className?:any;
-  subtype?:any;
-  handle?:any;
-  min?:number;
-  max?:number;
-  inline?:any;
-  value?:any;
-  values?:Array<value>;
+export class field {
+  _id?: any;
+  index?: any;
+  name?: any;
+  type?: any;
+  icon?: any;
+  toggle?: any;
+  sortable?: any;
+  filterable?: any;
+  label?: any;
+  placeholder?: any;
+  className?: any;
+  handle?: any;
+  min?: number;
+  max?: number;
+  inline?: any;
+  value?: any;
+  values?: Array<value>;
+  is_required?: any;
+  is_active?: boolean;
+  is_filterable?: boolean;
+  is_sortable?: boolean;
 }
 
-export class value{
-  label?:any="";
-  value?:any="";
+export class response {
+  name?: any;
+  is_required?: boolean;
+  is_filterable?: boolean;
+  is_sortable?: boolean;
+  field_type?: any;
+  form_section?: any;
+  is_active?: any;
+}
+
+export class value {
+  label?: any = "";
+  value?: any = "";
 }
 
 export interface IProperty {
@@ -114,8 +126,22 @@ export interface IProperty {
   flag?: number;
   page?: number;
   property_for?: any;
-  status_id?:any;
-  type_id?:any;
-  post_type?:any;
-  developer_id?:any;
+  status_id?: any;
+  type_id?: any;
+  post_type?: any;
+  developer_id?: any;
 }
+
+export class mapper {
+  /*mapToResponse(f: field): response {
+    r : response;
+    r.name = f.name;
+    r.is_active = f.is_active;
+    r.is_filterable = f.is_filterable;
+    r.is_required = f.is_required;
+    r.is_sortable = f.sortable;
+    r.field_type = f.type;
+    return r;
+  }*/
+}
+
