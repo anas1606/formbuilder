@@ -1,11 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { DndDropEvent, DropEffect } from 'ngx-drag-drop';
-import { field, mapper, response, value } from '../global.model';
-import { ActivatedRoute } from '@angular/router';
+import { Field, Response, Section, value } from '../global.model';
 import swal from 'sweetalert2';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatSidenav } from '@angular/material/sidenav';
 import { delay } from 'rxjs/operators';
+import { FormService } from '../Service/form.service';
 
 @Component({
   selector: 'app-edit-app',
@@ -17,13 +17,22 @@ export class EditAppComponent implements OnInit {
   @ViewChild(MatSidenav)
   sidenav!: MatSidenav;
 
-  value: value = {
-    label: "",
-    value: ""
+  constructor(
+    private observer: BreakpointObserver,
+    public formService: FormService
+  ) { }
+
+  private r = new Response();
+
+  fieldOptionList: value = {
+    name: "",
+    value: "",
+    isDeleted: false,
+    isActive: true,
   };
   success = false;
 
-  fieldModels: Array<field> = [
+  fieldModels: Array<Field> = [
     {
       "type": "text",
       "icon": "fa-th",
@@ -39,10 +48,10 @@ export class EditAppComponent implements OnInit {
       "placeholder": "Enter your name",
       "className": "form-control",
       "handle": true,
-      "is_active": true,
-      "is_required": false,
-      "is_filterable": false,
-      "is_sortable": false
+      "isActive": true,
+      "isRequired": false,
+      "isFilterable": false,
+      "isSortable": false
     },
     {
       "type": "number",
@@ -53,10 +62,10 @@ export class EditAppComponent implements OnInit {
       "value": "20",
       "min": 12,
       "max": 90,
-      "is_active": true,
-      "is_required": false,
-      "is_filterable": false,
-      "is_sortable": false
+      "isActive": true,
+      "isRequired": false,
+      "isFilterable": false,
+      "isSortable": false
     },
     {
       "type": "date",
@@ -64,10 +73,10 @@ export class EditAppComponent implements OnInit {
       "label": "Date",
       "placeholder": "Date",
       "className": "form-control",
-      "is_active": true,
-      "is_required": false,
-      "is_filterable": false,
-      "is_sortable": false
+      "isActive": true,
+      "isRequired": false,
+      "isFilterable": false,
+      "isSortable": false
     },
     {
       "type": "time",
@@ -75,28 +84,32 @@ export class EditAppComponent implements OnInit {
       "label": "Time",
       "placeholder": "Time",
       "className": "form-control",
-      "is_active": true,
-      "is_required": false,
-      "is_filterable": false,
-      "is_sortable": false
+      "isActive": true,
+      "isRequired": false,
+      "isFilterable": false,
+      "isSortable": false
     },
     {
       "type": "checkbox",
       "label": "Checkbox",
       "icon": "fa-list",
       "inline": true,
-      "is_active": true,
-      "is_required": false,
-      "is_filterable": false,
-      "is_sortable": false,
-      "values": [
+      "isActive": true,
+      "isRequired": false,
+      "isFilterable": false,
+      "isSortable": false,
+      "fieldOptionList": [
         {
-          "label": "Option 1",
-          "value": "option-1"
+          "name": "Option 1",
+          "value": "option-1",
+          "isDeleted": false,
+          "isActive": true
         },
         {
-          "label": "Option 2",
-          "value": "option-2"
+          "name": "Option 2",
+          "value": "option-2",
+          "isDeleted": false,
+          "isActive": true
         }
       ]
     },
@@ -104,73 +117,97 @@ export class EditAppComponent implements OnInit {
       "type": "radio",
       "icon": "fa-list-ul",
       "label": "Radio",
-      "is_active": true,
-      "is_required": false,
-      "is_filterable": false,
-      "is_sortable": false,
-      "values": [
+      "isActive": true,
+      "isRequired": false,
+      "isFilterable": false,
+      "isSortable": false,
+      "fieldOptionList": [
         {
-          "label": "Option 1",
-          "value": "option-1"
+          "name": "Option 1",
+          "value": "option-1",
+          "isDeleted": false,
+          "isActive": true
         },
         {
-          "label": "Option 2",
-          "value": "option-2"
+          "name": "Option 2",
+          "value": "option-2",
+          "isDeleted": false,
+          "isActive": true
         }
       ]
     },
     {
       "type": "autocomplete",
       "icon": "fa-bars",
-      "label": "Select",
+      "label": "Dropdown",
       "placeholder": "Select",
       "className": "form-control",
-      "is_active": true,
-      "is_required": false,
-      "is_filterable": false,
-      "is_sortable": false,
-      "values": [
+      "isActive": true,
+      "isRequired": false,
+      "isFilterable": false,
+      "isSortable": false,
+      "fieldOptionList": [
         {
-          "label": "Option 1",
-          "value": "option-1"
+          "name": "Option 1",
+          "value": "option-1",
+          "isDeleted": false,
+          "isActive": true
         },
         {
-          "label": "Option 2",
-          "value": "option-2"
+          "name": "Option 2",
+          "value": "option-2",
+          "isDeleted": false,
+          "isActive": true
         },
         {
-          "label": "Option 3",
-          "value": "option-3"
+          "name": "Option 3",
+          "value": "option-3",
+          "isDeleted": false,
+          "isActive": true
         }
       ]
     },
   ];
 
-  modelFields: Array<field> = [];
-  responseFields: Array<response> = [];
+  modelFields: Array<Field> = [];
+  responseFields: Array<Response> = [];
+
+  section: Array<Section> = [{
+    "name": "Section",
+    "isActive": true,
+    "isDeleted": false,
+    "fields": this.responseFields
+  }];
+
+  modelsection: Array<Section> = [{
+    "name": "Section",
+    "isActive": true,
+    "isDeleted": false,
+    "fields": this.modelFields
+  }];
 
   model: any = {
     name: 'New Form',
+    isActive: true,
+    isDelete: false,
     theme: {
       bgColor: "ffffff",
       textColor: "555555",
       bannerImage: ""
     },
-    attributes: this.modelFields
+    attributes: this.modelsection
+
   };
 
   response: any = {
     name: 'From Name',
-    fields: this.responseFields
+    isActive: true,
+    isDelete: false,
+    formSection: this.section,
   }
 
   report = false;
   reports: any = [];
-
-  constructor(
-    private observer: BreakpointObserver,
-    private route: ActivatedRoute
-  ) { }
 
   ngAfterViewInit() {
     this.observer
@@ -188,6 +225,7 @@ export class EditAppComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.formService.getFieldTypes();
     // this.route.params.subscribe( params =>{
     //   console.log(params);
     //   this.us.getDataApi('/admin/getFormById',{id:params.id}).subscribe(r=>{
@@ -221,10 +259,8 @@ export class EditAppComponent implements OnInit {
   onDragged(item: any, list: any[], resp: any[], effect: DropEffect) {
     if (effect === "move") {
       const index = list.indexOf(item);
-      const resindex = resp.indexOf(item);
       list.splice(index, 1);
-      resp.splice(resindex, 1);
-
+      resp.splice(index, 1);
     }
   }
 
@@ -236,7 +272,7 @@ export class EditAppComponent implements OnInit {
     console.log("dragover", JSON.stringify(event, null, 2));
   }
 
-  onDrop(event: DndDropEvent, list?: any[], resplist?: any[] ) {
+  onDrop(event: DndDropEvent, list?: any[], resplist?: any[]) {
     if (list && resplist && (event.dropEffect === "copy" || event.dropEffect === "move")) {
       if (event.dropEffect === "copy")
         event.data.name = event.data.type;
@@ -245,16 +281,16 @@ export class EditAppComponent implements OnInit {
         index = list.length;
       }
       list.splice(index, 0, event.data);
-      resplist.splice(index, 0, event.data);
+      resplist.splice(index, 0, this.mapper(event.data));
     }
   }
 
   addValue(values) {
-    values.push(this.value);
-    this.value = { label: "", value: "" };
+    values.push(this.fieldOptionList);
+    this.fieldOptionList = { name: "", value: "", isActive: true, isDeleted: false };
   }
 
-  removeField(i) {
+  removeField(i:any , s_index:any) {
     swal({
       title: 'Are you sure?',
       text: "Do you want to remove this field?",
@@ -266,6 +302,7 @@ export class EditAppComponent implements OnInit {
     }).then((result) => {
       if (result.value) {
         this.model.attributes.splice(i, 1);
+        this.response.formSection[s_index].fields.splice(i, 1);
       }
     });
 
@@ -354,7 +391,28 @@ export class EditAppComponent implements OnInit {
     // },error=>{
     //   swal('Error',error.message,'error');
     // });
-  } 
+  }
 
+  change(event: any, index: any, list?: any[], resplist?: any[]) {
+    const value: any = event.target.value.split(' ');
+    console.log(value);
+    list[index].type = value[0];
+    resplist[index].field_type = value[1];
+  }
+
+  private mapper(f: Field): any {
+    this.r = new Response();
+
+    this.r.name = f.name;
+    this.r.placeholder = f.placeholder;
+    this.r.isActive = f.isActive;
+    this.r.isFilterable = f.isFilterable;
+    this.r.isRequired = f.isRequired;
+    this.r.isSortable = f.isSortable;
+    this.r.fkFieldId = this.formService.indexOf(f.type);
+    this.r.fieldOptionList = f.fieldOptionList;
+
+    return this.r;
+  }
 }
 

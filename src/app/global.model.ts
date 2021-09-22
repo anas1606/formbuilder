@@ -1,12 +1,9 @@
-export class field {
+export class Field {
   _id?: any;
-  index?: any;
   name?: any;
   type?: any;
   icon?: any;
   toggle?: any;
-  sortable?: any;
-  filterable?: any;
   label?: any;
   placeholder?: any;
   className?: any;
@@ -15,26 +12,39 @@ export class field {
   max?: number;
   inline?: any;
   value?: any;
-  values?: Array<value>;
-  is_required?: any;
-  is_active?: boolean;
-  is_filterable?: boolean;
-  is_sortable?: boolean;
+  fieldOptionList?: Array<value>;
+  isRequired?: any;
+  isActive?: boolean;
+  isFilterable?: boolean;
+  isSortable?: boolean;
+  isDeleted?:boolean;
 }
 
-export class response {
+export class Response {
   name?: any;
-  is_required?: boolean;
-  is_filterable?: boolean;
-  is_sortable?: boolean;
-  field_type?: any;
+  isRequired?: boolean;
+  isFilterable?: boolean;
+  isSortable?: boolean;
+  isDeleted?: boolean;
+  fkFieldId?: any;
   form_section?: any;
-  is_active?: any;
+  isActive?: any;
+  fieldOptionList?: Array<value>;
+  placeholder?: any;
+}
+
+export class Section {
+  name?: any = "";
+  isActive?: boolean = true;
+  isDeleted?: boolean = false;
+  fields?: Array<Field>;
 }
 
 export class value {
-  label?: any = "";
+  name?: any = "";
   value?: any = "";
+  isActive?: boolean = true;
+  isDeleted?: boolean = false;
 }
 
 export interface IProperty {
@@ -130,18 +140,5 @@ export interface IProperty {
   type_id?: any;
   post_type?: any;
   developer_id?: any;
-}
-
-export class mapper {
-  /*mapToResponse(f: field): response {
-    r : response;
-    r.name = f.name;
-    r.is_active = f.is_active;
-    r.is_filterable = f.is_filterable;
-    r.is_required = f.is_required;
-    r.is_sortable = f.sortable;
-    r.field_type = f.type;
-    return r;
-  }*/
 }
 

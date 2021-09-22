@@ -13,6 +13,8 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 import { MatButtonModule} from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FormService } from './Service/form.service';
+import { HttpClientModule } from '@angular/common/http';
 
 const appRoutes: Routes = [
   { path: '', component: EditAppComponent },
@@ -26,6 +28,7 @@ const appRoutes: Routes = [
   imports: [
     RouterModule.forRoot(appRoutes),
     SweetAlert2Module.forRoot(),
+    HttpClientModule,
     BrowserModule,
     FormsModule,
     AppRoutingModule,
@@ -37,7 +40,9 @@ const appRoutes: Routes = [
     MatIconModule,
     MatDividerModule,
   ],
-  providers: [],
+  providers: [
+    FormService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

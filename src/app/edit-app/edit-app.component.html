@@ -49,8 +49,9 @@
     <div class="content mat-elevation-z8">
       <section
         dndDropzone
+        *ngFor="let s of response.formSection; let s_index = index;"
         (dndDragover)="onDragover($event)"
-        (dndDrop)="onDrop($event, model.attributes, response.fields )"
+        (dndDrop)="onDrop($event, model.attributes[s_index].fields, response.formSection[s_index].fields)"
         class="dndDropArea draw-section"
         [ngClass]="{ empty: model.attributes.length == 0 }"
         [style.backgroundColor]="model.theme.bgColor"
@@ -58,10 +59,12 @@
       >
         <div
           class="field"
-          *ngFor="let item of model.attributes; let i = index"
+          *ngFor="let item of model.attributes[s_index].fields; let i = index"
           (dndStart)="onDragStart($event)"
           (dndCanceled)="onDragCanceled($event)"
-          (dndMoved)="onDragged(item, model.attributes, response.fields, 'move')"
+          (dndMoved)="
+            onDragged(item, model.attributes[s_index].fields, response.formSection[s_index].fields, 'move')
+          "
           [dndEffectAllowed]="'all'"
           [dndDraggable]="item"
         >
@@ -75,7 +78,7 @@
               <span *ngIf="item.required" class="red">*</span></h5> -->
               <div *ngIf="item.type == 'text'">
                 <label>{{ item.name }}</label>
-                <label *ngIf="item.required" class="text-danger">*</label>
+                <label *ngIf="item.isRequired" class="text-danger">*</label>
                 <input
                   type="text"
                   class="form-control"
@@ -85,7 +88,7 @@
               </div>
               <div *ngIf="item.type == 'email'">
                 <label>{{ item.name }}</label>
-                <label *ngIf="item.required" class="text-danger">*</label>
+                <label *ngIf="item.isRequired" class="text-danger">*</label>
                 <input
                   type="email"
                   class="form-control"
@@ -95,7 +98,7 @@
               </div>
               <div *ngIf="item.type == 'phone'">
                 <label>{{ item.name }}</label>
-                <label *ngIf="item.required" class="text-danger">*</label>
+                <label *ngIf="item.isRequired" class="text-danger">*</label>
                 <input
                   type="text"
                   class="form-control"
@@ -105,7 +108,7 @@
               </div>
               <div *ngIf="item.type == 'number'">
                 <label>{{ item.name }}</label>
-                <label *ngIf="item.required" class="text-danger">*</label>
+                <label *ngIf="item.isRequired" class="text-danger">*</label>
                 <input
                   type="number"
                   class="form-control"
@@ -117,7 +120,7 @@
               </div>
               <div *ngIf="item.type == 'date'">
                 <label>{{ item.name }}</label>
-                <label *ngIf="item.required" class="text-danger">*</label>
+                <label *ngIf="item.isRequired" class="text-danger">*</label>
                 <input
                   type="date"
                   class="form-control"
@@ -127,7 +130,7 @@
               </div>
               <div *ngIf="item.type == 'time'">
                 <label>{{ item.name }}</label>
-                <label *ngIf="item.required" class="text-danger">*</label>
+                <label *ngIf="item.isRequired" class="text-danger">*</label>
                 <input
                   type="time"
                   class="form-control"
@@ -137,10 +140,14 @@
               </div>
               <div *ngIf="item.type == 'autocomplete'">
                 <label>{{ item.name }}</label>
-                <label *ngIf="item.required" class="text-danger">*</label>
+                <label *ngIf="item.isRequired" class="text-danger">*</label>
                 <select class="form-control" id="{{ item.name }}">
-                  <option *ngFor="let v of item.values" [value]="v.value">
-                    {{ v.label }}
+                  <option
+                    *ngFor="let v of item.fieldOptionList"
+                    [value]="v.value"
+                    style="background-color: rgb(94, 88, 88)"
+                  >
+                    {{ v.name }}
                   </option>
                 </select>
                 <!-- <small class="form-text text-muted">{{item.description}}</small> -->
@@ -148,8 +155,8 @@
 
               <div *ngIf="item.type == 'checkbox'">
                 <label>{{ item.name }}</label>
-                <label *ngIf="item.required" class="text-danger">*</label>
-                <div *ngFor="let v of item.values" class="inline-form-group">
+                <label *ngIf="item.isRequired" class="text-danger">*</label>
+                <div *ngFor="let v of item.fieldOptionList" class="inline-form-group">
                   <label class="cust-check-bx">
                     <input
                       type="checkbox"
@@ -157,7 +164,7 @@
                       name="{{ item.name }}"
                       (click)="toggleValue(v)"
                     />
-                    {{ v.label }}
+                    {{ v.name }}
                     <span class="checkmark"></span>
                   </label>
                 </div>
@@ -165,15 +172,15 @@
 
               <div *ngIf="item.type == 'radio'">
                 <label>{{ item.name }}</label>
-                <label *ngIf="item.required" class="text-danger">*</label>
-                <div *ngFor="let v of item.values" class="inline-form-group">
+                <label *ngIf="item.isRequired" class="text-danger">*</label>
+                <div *ngFor="let v of item.fieldOptionList" class="inline-form-group">
                   <label class="cust-check-bx">
                     <input
                       type="radio"
                       [value]="v.value"
                       name="{{ item.name }}"
                     />
-                    {{ v.label }}
+                    {{ v.name }}
                     <span class="checkmark"></span>
                   </label>
                 </div>
@@ -191,25 +198,30 @@
                 (click)="item.toggle = true"
                 class="fa fa-chevron-down pull-right"
               ></i>
-              <i (click)="removeField(i)" class="fa fa-trash pull-right"></i>
+              <i (click)="removeField(i,s_index)" class="fa fa-trash pull-right"></i>
             </div>
           </div>
 
-          <!-- Field Proper DropDown -->
+          <!-- Field Property DropDown -->
 
           <div *ngIf="item.toggle" class="toggle-Wrapper">
             <div class="form-group">
               <label style="padding-right: 1%; padding-left: 1%">
-                Required</label
-              >
+                Required
+              </label>
               <i
-                *ngIf="item.is_required"
-                (click)="item.is_required = false"
+                *ngIf="item.isRequired"
+                (click)="
+                  item.isRequired = false;
+                  response.formSection[s_index].fields[i].isRequired = false
+                "
                 class="fa fa-toggle-on red"
               ></i>
               <i
-                *ngIf="!item.is_required"
-                (click)="item.is_required = true"
+                *ngIf="!item.isRequired"
+                (click)="
+                  item.isRequired = true; response.formSection[s_index].fields[i].isRequired = true
+                "
                 class="fa fa-toggle-off"
               ></i>
 
@@ -217,13 +229,18 @@
                 >Sortable</label
               >
               <i
-                *ngIf="item.is_sortable"
-                (click)="item.is_sortable = false"
-                class="fa fa-toggle-on green  "
+                *ngIf="item.isSortable"
+                (click)="
+                  item.isSortable = false;
+                  response.formSection[s_index].fields[i].isSortable = false
+                "
+                class="fa fa-toggle-on green"
               ></i>
               <i
-                *ngIf="!item.is_sortable"
-                (click)="item.is_sortable = true"
+                *ngIf="!item.isSortable"
+                (click)="
+                  item.isSortable = true; response.formSection[s_index].fields[i].isSortable = true
+                "
                 class="fa fa-toggle-off"
               ></i>
 
@@ -231,27 +248,35 @@
                 >Filterable</label
               >
               <i
-                *ngIf="item.is_filterable"
-                (click)="item.is_filterable = false"
+                *ngIf="item.isFilterable"
+                (click)="
+                  item.isFilterable = false;
+                  response.formSection[s_index].fields[i].isFilterable = false
+                "
                 class="fa fa-toggle-on green"
               ></i>
               <i
-                *ngIf="!item.is_filterable"
-                (click)="item.is_filterable = true"
+                *ngIf="!item.isFilterable"
+                (click)="
+                  item.isFilterable = true;
+                  response.formSection[s_index].fields[i].isFilterable = true
+                "
                 class="fa fa-toggle-off"
               ></i>
 
-              <label style="padding-right: 1%; padding-left: 1%">
-                Active</label
-              >
+              <label style="padding-right: 1%; padding-left: 1%"> Active</label>
               <i
-                *ngIf="item.is_active"
-                (click)="item.is_active = false"
+                *ngIf="item.isActive"
+                (click)="
+                  item.isActive = false; response.formSection[s_index].fields[i].isActive = false
+                "
                 class="fa fa-toggle-on green"
               ></i>
               <i
-                *ngIf="!item.is_active"
-                (click)="item.is_active = true"
+                *ngIf="!item.isActive"
+                (click)="
+                  item.isActive = true; response.formSection[s_index].fields[i].isActive = true
+                "
                 class="fa fa-toggle-off"
               ></i>
 
@@ -273,28 +298,26 @@
 
             <div
               *ngIf="
-                item.type != 'number' ||
-                item.type != 'radio' ||
-                item.type != 'checkbox' ||
+                item.type != 'number' &&
+                item.type != 'radio' &&
+                item.type != 'checkbox' &&
+                item.type != 'time' &&
+                item.type != 'date' &&
                 item.type != 'autocomplete'
               "
             >
               <label style="padding-right: 1%"> Field Type </label>
               <select
                 class="form-control"
-                (change)="item.type = $event.target.value"
+                (change)="change($event, i, model.attributes, response.formSection[s_index].fields)"
               >
                 <option
                   class="form-control"
                   style="background-color: rgb(94, 88, 88)"
+                  *ngFor="let type of formService.type"
+                  value="{{ type.name + ' ' + type.id | lowercase }}"
                 >
-                  text
-                </option>
-                <option
-                  class="form-control"
-                  style="background-color: rgb(94, 88, 88)"
-                >
-                  email
+                  {{ type.name | lowercase }}
                 </option>
               </select>
             </div>
@@ -332,12 +355,12 @@
               "
             >
               <div class="row">
-                <div class="col-5">
+                <div class="col-4">
                   <div class="form-group">
                     <label>Label</label>
                   </div>
                 </div>
-                <div class="col-5">
+                <div class="col-4">
                   <div class="form-group">
                     <label>Value</label>
                   </div>
@@ -347,21 +370,26 @@
                     <label>Action</label>
                   </div>
                 </div>
+                <div class="col-2">
+                  <div class="form-group">
+                    <label>Active / InActive</label>
+                  </div>
+                </div>
               </div>
               <div
-                *ngFor="let i of item.values; let valueIndex = index"
+                *ngFor="let i of item.fieldOptionList; let valueIndex = index"
                 class="row"
               >
-                <div class="col-5">
+                <div class="col-4">
                   <div class="form-group">
                     <input
                       class="form-control"
                       type="text"
-                      [(ngModel)]="i.label"
+                      [(ngModel)]="i.name"
                     />
                   </div>
                 </div>
-                <div class="col-5">
+                <div class="col-4">
                   <div class="form-group">
                     <input
                       class="form-control"
@@ -372,34 +400,55 @@
                 </div>
                 <div class="col-2">
                   <div class="form-group">
-                    <label (click)="item.values.splice(valueIndex, 1)"
+                    <label (click)="item.fieldOptionList.splice(valueIndex, 1)"
                       >remove</label
                     >
                   </div>
                 </div>
+                <div class="col-2">
+                  <label style="padding-right: 1%; padding-left: 1%">
+                    Active</label
+                  >
+                  <i
+                    *ngIf="i.isActive"
+                    (click)="
+                      i.isActive = false;
+                      response.formSection[s_index].fields[i].isActive = false
+                    "
+                    class="fa fa-toggle-on green"
+                  ></i>
+
+                  <i
+                    *ngIf="!i.isActive"
+                    (click)="
+                      i.isActive = true; response.formSection[i].fields[i].values[i].isActive = true
+                    "
+                    class="fa fa-toggle-off"
+                  ></i>
+                </div>
               </div>
               <div class="row">
-                <div class="col-5">
+                <div class="col-4">
                   <div class="form-group">
                     <input
                       class="form-control"
                       type="text"
-                      [(ngModel)]="value.label"
+                      [(ngModel)]="fieldOptionList.name"
                     />
                   </div>
                 </div>
-                <div class="col-5">
+                <div class="col-4">
                   <div class="form-group">
                     <input
                       class="form-control"
                       type="text"
-                      [(ngModel)]="value.value"
+                      [(ngModel)]="fieldOptionList.value"
                     />
                   </div>
                 </div>
                 <div class="col-2">
                   <div class="form-group">
-                    <label (click)="addValue(item.values)">Add</label>
+                    <label (click)="addValue(item.fieldOptionList)">Add</label>
                   </div>
                 </div>
               </div>
