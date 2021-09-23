@@ -1,3 +1,4 @@
+<app-loader></app-loader>
 <mat-toolbar class="mat-elevation-z8">
   <button
     mat-icon-button
@@ -21,7 +22,7 @@
     />
   </div>
   <div class="col-md-4" align="right">
-    <button mat-button class="save">
+    <button mat-button class="save" (click) = "submit()">
       <mat-icon>save</mat-icon>
       Save Form
     </button>
@@ -202,7 +203,7 @@
                   <option
                     *ngFor="let v of item.fieldOptionList.fieldOptionList"
                     [value]="v.value"
-                    style="background-color: rgb(94, 88, 88)"
+                    style="background-color: #002b5c; color: white;"
                   >
                     {{ v.name }}
                   </option>
@@ -391,7 +392,7 @@
               >
                 <option
                   class="form-control"
-                  style="background-color: rgb(94, 88, 88)"
+                  style="background-color: #002b5c; color: white;"
                   *ngFor="let type of formService.type"
                   value="{{ type.name + ' ' + type.id | lowercase }}"
                 >

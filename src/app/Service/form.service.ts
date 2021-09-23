@@ -7,17 +7,27 @@ import { HttpClient } from '@angular/common/http';
 export class FormService {
 
   constructor(private http: HttpClient) { }
-  type : any;
+  type: any;
 
-  getFieldTypes () {
+  getFieldTypes() {
     this.http.get<any>('http://localhost:8080/fieldType/list').subscribe(data => {
-      this.type = data;
+      this.type = data.fieldTypeList;
     });
   }
 
-  indexOf(name: string) : any{
-    for (var i in this.type){
-      if(this.type[i].name.toLowerCase() == name){
+  saveForm(data : any) {
+    const json = JSON.stringify(data);
+    const headers = { 'Content-Type': 'application/json' };
+    const body = json ;
+    this.http.post<any>('http://localhost:8080/form/addForm', body, { headers }).subscribe(data => {
+      console.log(data)
+      alert("Done");
+    });
+  }
+
+  indexOf(name: string): any {
+    for (var i in this.type) {
+      if (this.type[i].name.toLowerCase() == name) {
         return this.type[i].id;
       }
     }

@@ -1,18 +1,18 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { DndDropEvent, DropEffect } from 'ngx-drag-drop';
-import { Field, Response, Section, value } from '../global.model';
 import swal from 'sweetalert2';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatSidenav } from '@angular/material/sidenav';
 import { delay } from 'rxjs/operators';
-import { FormService } from '../Service/form.service';
+import { FormService } from 'src/app/Service/form.service';
+import { Field, Response, Section, value } from 'src/app/global.model';
 
 @Component({
-  selector: 'app-edit-app',
-  templateUrl: './edit-app.component.html',
-  styleUrls: ['./edit-app.component.css']
+  selector: 'app-form-builder',
+  templateUrl: './form-builder.component.html',
+  styleUrls: ['./form-builder.component.css']
 })
-export class EditAppComponent implements OnInit {
+export class FormBuilderComponent implements OnInit {
 
   @ViewChild(MatSidenav)
   sidenav!: MatSidenav;
@@ -323,7 +323,7 @@ export class EditAppComponent implements OnInit {
   removeSection(s_index: any) {
     swal({
       title: 'Are you sure?',
-      text: "Do you want to remove \""+ this.response.formSectionList.formSectionList[s_index].name +"\" field?",
+      text: "Do you want to remove \"" + this.response.formSectionList.formSectionList[s_index].name + "\" field?",
       type: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#00B96F',
@@ -378,7 +378,7 @@ export class EditAppComponent implements OnInit {
   }
 
   submit() {
-    let valid = true;
+    /*let valid = true;
     let validationArray = JSON.parse(JSON.stringify(this.model.attributes));
     validationArray.reverse().forEach(field => {
       console.log(field.label + '=>' + field.required + "=>" + field.value);
@@ -417,7 +417,8 @@ export class EditAppComponent implements OnInit {
     //   this.success = true;
     // },error=>{
     //   swal('Error',error.message,'error');
-    // });
+    // }); */
+    this.formService.saveForm(this.response);
   }
 
   change(event: any, index: any, list?: any[], resplist?: any[]) {
@@ -442,4 +443,3 @@ export class EditAppComponent implements OnInit {
     return this.r;
   }
 }
-
