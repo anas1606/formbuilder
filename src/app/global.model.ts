@@ -12,7 +12,7 @@ export class Field {
   max?: number;
   inline?: any;
   value?: any;
-  fieldOptionList?: Array<value>;
+  fieldOptionList?: any;
   isRequired?: any;
   isActive?: boolean;
   isFilterable?: boolean;
@@ -26,10 +26,10 @@ export class Response {
   isFilterable?: boolean;
   isSortable?: boolean;
   isDeleted?: boolean;
-  fkFieldId?: any;
+  fkFieldTypeId?: any;
   form_section?: any;
   isActive?: any;
-  fieldOptionList?: Array<value>;
+  fieldOptionList?: any;
   placeholder?: any;
 }
 
@@ -37,7 +37,7 @@ export class Section {
   name?: any = "";
   isActive?: boolean = true;
   isDeleted?: boolean = false;
-  fields?: Array<Field>;
+  fieldList?: any;
 }
 
 export class value {

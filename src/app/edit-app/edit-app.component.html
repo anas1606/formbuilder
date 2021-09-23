@@ -17,12 +17,13 @@
       class="form-control formname"
       matInput
       placeholder="Form Name"
-      #name
+      [(ngModel)]="response.name"
     />
   </div>
   <div class="col-md-4" align="right">
     <button mat-button class="save">
-      <i class="fa fa-plus"></i> Save Form
+      <mat-icon>save</mat-icon>
+      Save Form
     </button>
   </div>
 </mat-toolbar>
@@ -43,27 +44,83 @@
         <span class="label">{{ item.label }}</span>
       </div>
     </div>
+    <div class="field field-flex pointer shadow-bg" (click) = "addSection()">
+      <i class="fa fa-th pull-left"></i>
+      <span class="label">Add Section</span>
+    </div>
   </mat-sidenav>
 
   <mat-sidenav-content>
-    <div class="content mat-elevation-z8">
+    <div
+      class="content mat-elevation-z8"
+      *ngFor="
+        let s of response.formSectionList.formSectionList;
+        let s_index = index
+      "
+    >
       <section
         dndDropzone
-        *ngFor="let s of response.formSection; let s_index = index;"
         (dndDragover)="onDragover($event)"
-        (dndDrop)="onDrop($event, model.attributes[s_index].fields, response.formSection[s_index].fields)"
+        (dndDrop)="
+          onDrop(
+            $event,
+            model.formSectionList.attributes[s_index].fieldList.fieldToList,
+            s.fieldList.fieldToList
+          )
+        "
         class="dndDropArea draw-section"
-        [ngClass]="{ empty: model.attributes.length == 0 }"
+        [ngClass]="{
+          empty: model.formSectionList.attributes[s_index].length == 0
+        }"
         [style.backgroundColor]="model.theme.bgColor"
         [style.color]="model.theme.textColor"
       >
+        <div class="row" style="width: 100%;">
+          <div class="form-group col-6">
+            <input class="form-control" type="text" [(ngModel)]="s.name" />
+          </div>
+
+          <div class="form-group col-2" align="right">
+            <Label>
+              Status
+            </Label>
+          </div>
+          <div class="form-group col-2" align="left">
+            <i
+              *ngIf="s.isActive"
+              (click)="s.isActive = false; s.isActive = false"
+              class="fa fa-toggle-on fa-2x green"
+            ></i>
+            <i
+              *ngIf="!s.isActive"
+              (click)="s.isActive = true; s.isActive = true"
+              class="fa fa-toggle-off fa-2x red"
+            ></i>
+          </div>
+          <div class="form-group col-2" align="right">
+            <i
+              (click)="removeSection(s_index)"
+              class="fa fa-trash fa-lg"
+            ></i>
+          </div>
+        </div>
+
         <div
           class="field"
-          *ngFor="let item of model.attributes[s_index].fields; let i = index"
+          *ngFor="
+            let item of model.formSectionList.attributes[s_index].fieldList
+              .fieldToList;
+            let i = index
+          "
           (dndStart)="onDragStart($event)"
           (dndCanceled)="onDragCanceled($event)"
           (dndMoved)="
-            onDragged(item, model.attributes[s_index].fields, response.formSection[s_index].fields, 'move')
+            onDragged(
+              item,
+              model.formSectionList.attributes[s_index].fieldList.fieldToList,
+              s.fieldList.fieldToList,
+              'move'
+            )
           "
           [dndEffectAllowed]="'all'"
           [dndDraggable]="item"
@@ -143,7 +200,7 @@
                 <label *ngIf="item.isRequired" class="text-danger">*</label>
                 <select class="form-control" id="{{ item.name }}">
                   <option
-                    *ngFor="let v of item.fieldOptionList"
+                    *ngFor="let v of item.fieldOptionList.fieldOptionList"
                     [value]="v.value"
                     style="background-color: rgb(94, 88, 88)"
                   >
@@ -156,7 +213,10 @@
               <div *ngIf="item.type == 'checkbox'">
                 <label>{{ item.name }}</label>
                 <label *ngIf="item.isRequired" class="text-danger">*</label>
-                <div *ngFor="let v of item.fieldOptionList" class="inline-form-group">
+                <div
+                  *ngFor="let v of item.fieldOptionList.fieldOptionList"
+                  class="inline-form-group"
+                >
                   <label class="cust-check-bx">
                     <input
                       type="checkbox"
@@ -173,7 +233,10 @@
               <div *ngIf="item.type == 'radio'">
                 <label>{{ item.name }}</label>
                 <label *ngIf="item.isRequired" class="text-danger">*</label>
-                <div *ngFor="let v of item.fieldOptionList" class="inline-form-group">
+                <div
+                  *ngFor="let v of item.fieldOptionList.fieldOptionList"
+                  class="inline-form-group"
+                >
                   <label class="cust-check-bx">
                     <input
                       type="radio"
@@ -198,7 +261,10 @@
                 (click)="item.toggle = true"
                 class="fa fa-chevron-down pull-right"
               ></i>
-              <i (click)="removeField(i,s_index)" class="fa fa-trash pull-right"></i>
+              <i
+                (click)="removeField(i, s_index)"
+                class="fa fa-trash pull-right"
+              ></i>
             </div>
           </div>
 
@@ -213,14 +279,15 @@
                 *ngIf="item.isRequired"
                 (click)="
                   item.isRequired = false;
-                  response.formSection[s_index].fields[i].isRequired = false
+                  s.fieldList.fieldToList[i].isRequired = false
                 "
                 class="fa fa-toggle-on red"
               ></i>
               <i
                 *ngIf="!item.isRequired"
                 (click)="
-                  item.isRequired = true; response.formSection[s_index].fields[i].isRequired = true
+                  item.isRequired = true;
+                  s.fieldList.fieldToList[i].isRequired = true
                 "
                 class="fa fa-toggle-off"
               ></i>
@@ -232,14 +299,15 @@
                 *ngIf="item.isSortable"
                 (click)="
                   item.isSortable = false;
-                  response.formSection[s_index].fields[i].isSortable = false
+                  s.fieldList.fieldToList[i].isSortable = false
                 "
                 class="fa fa-toggle-on green"
               ></i>
               <i
                 *ngIf="!item.isSortable"
                 (click)="
-                  item.isSortable = true; response.formSection[s_index].fields[i].isSortable = true
+                  item.isSortable = true;
+                  s.fieldList.fieldToList[i].isSortable = true
                 "
                 class="fa fa-toggle-off"
               ></i>
@@ -251,7 +319,7 @@
                 *ngIf="item.isFilterable"
                 (click)="
                   item.isFilterable = false;
-                  response.formSection[s_index].fields[i].isFilterable = false
+                  s.fieldList.fieldToList[i].isFilterable = false
                 "
                 class="fa fa-toggle-on green"
               ></i>
@@ -259,7 +327,7 @@
                 *ngIf="!item.isFilterable"
                 (click)="
                   item.isFilterable = true;
-                  response.formSection[s_index].fields[i].isFilterable = true
+                  s.fieldList.fieldToList[i].isFilterable = true
                 "
                 class="fa fa-toggle-off"
               ></i>
@@ -268,14 +336,16 @@
               <i
                 *ngIf="item.isActive"
                 (click)="
-                  item.isActive = false; response.formSection[s_index].fields[i].isActive = false
+                  item.isActive = false;
+                  s.fieldList.fieldToList[i].isActive = false
                 "
                 class="fa fa-toggle-on green"
               ></i>
               <i
                 *ngIf="!item.isActive"
                 (click)="
-                  item.isActive = true; response.formSection[s_index].fields[i].isActive = true
+                  item.isActive = true;
+                  s.fieldList.fieldToList[i].isActive = true
                 "
                 class="fa fa-toggle-off"
               ></i>
@@ -309,7 +379,15 @@
               <label style="padding-right: 1%"> Field Type </label>
               <select
                 class="form-control"
-                (change)="change($event, i, model.attributes, response.formSection[s_index].fields)"
+                (change)="
+                  change(
+                    $event,
+                    i,
+                    model.formSectionList.attributes[s_index].fieldList
+                      .fieldToList,
+                    s.fieldList.fieldToList
+                  )
+                "
               >
                 <option
                   class="form-control"
@@ -377,7 +455,10 @@
                 </div>
               </div>
               <div
-                *ngFor="let i of item.fieldOptionList; let valueIndex = index"
+                *ngFor="
+                  let i of item.fieldOptionList.fieldOptionList;
+                  let valueIndex = index
+                "
                 class="row"
               >
                 <div class="col-4">
@@ -400,7 +481,13 @@
                 </div>
                 <div class="col-2">
                   <div class="form-group">
-                    <label (click)="item.fieldOptionList.splice(valueIndex, 1)"
+                    <label
+                      (click)="
+                        item.fieldOptionList.fieldOptionList.splice(
+                          valueIndex,
+                          1
+                        )
+                      "
                       >remove</label
                     >
                   </div>
@@ -413,7 +500,7 @@
                     *ngIf="i.isActive"
                     (click)="
                       i.isActive = false;
-                      response.formSection[s_index].fields[i].isActive = false
+                      s.fieldList.fieldToList[i].isActive = false
                     "
                     class="fa fa-toggle-on green"
                   ></i>
@@ -421,7 +508,8 @@
                   <i
                     *ngIf="!i.isActive"
                     (click)="
-                      i.isActive = true; response.formSection[i].fields[i].values[i].isActive = true
+                      i.isActive = true;
+                      s.fieldList.fieldToList[i].values[i].isActive = true
                     "
                     class="fa fa-toggle-off"
                   ></i>
@@ -448,7 +536,10 @@
                 </div>
                 <div class="col-2">
                   <div class="form-group">
-                    <label (click)="addValue(item.fieldOptionList)">Add</label>
+                    <label
+                      (click)="addValue(item.fieldOptionList.fieldOptionList)"
+                      >Add</label
+                    >
                   </div>
                 </div>
               </div>

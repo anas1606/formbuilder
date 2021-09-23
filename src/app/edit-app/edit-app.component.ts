@@ -35,14 +35,6 @@ export class EditAppComponent implements OnInit {
   fieldModels: Array<Field> = [
     {
       "type": "text",
-      "icon": "fa-th",
-      "label": "Section",
-      "placeholder": "Enter your name",
-      "className": "form-control",
-      "handle": true
-    },
-    {
-      "type": "text",
       "icon": "fa-font",
       "label": "Text",
       "placeholder": "Enter your name",
@@ -98,20 +90,22 @@ export class EditAppComponent implements OnInit {
       "isRequired": false,
       "isFilterable": false,
       "isSortable": false,
-      "fieldOptionList": [
-        {
-          "name": "Option 1",
-          "value": "option-1",
-          "isDeleted": false,
-          "isActive": true
-        },
-        {
-          "name": "Option 2",
-          "value": "option-2",
-          "isDeleted": false,
-          "isActive": true
-        }
-      ]
+      "fieldOptionList": {
+        "fieldOptionList": [
+          {
+            "name": "Option 1",
+            "value": "option-1",
+            "isDeleted": false,
+            "isActive": true
+          },
+          {
+            "name": "Option 2",
+            "value": "option-2",
+            "isDeleted": false,
+            "isActive": true
+          }
+        ]
+      }
     },
     {
       "type": "radio",
@@ -121,20 +115,22 @@ export class EditAppComponent implements OnInit {
       "isRequired": false,
       "isFilterable": false,
       "isSortable": false,
-      "fieldOptionList": [
-        {
-          "name": "Option 1",
-          "value": "option-1",
-          "isDeleted": false,
-          "isActive": true
-        },
-        {
-          "name": "Option 2",
-          "value": "option-2",
-          "isDeleted": false,
-          "isActive": true
-        }
-      ]
+      "fieldOptionList": {
+        "fieldOptionList": [
+          {
+            "name": "Option 1",
+            "value": "option-1",
+            "isDeleted": false,
+            "isActive": true
+          },
+          {
+            "name": "Option 2",
+            "value": "option-2",
+            "isDeleted": false,
+            "isActive": true
+          }
+        ]
+      }
     },
     {
       "type": "autocomplete",
@@ -146,44 +142,44 @@ export class EditAppComponent implements OnInit {
       "isRequired": false,
       "isFilterable": false,
       "isSortable": false,
-      "fieldOptionList": [
-        {
-          "name": "Option 1",
-          "value": "option-1",
-          "isDeleted": false,
-          "isActive": true
-        },
-        {
-          "name": "Option 2",
-          "value": "option-2",
-          "isDeleted": false,
-          "isActive": true
-        },
-        {
-          "name": "Option 3",
-          "value": "option-3",
-          "isDeleted": false,
-          "isActive": true
-        }
-      ]
+      "fieldOptionList": {
+        "fieldOptionList": [
+          {
+            "name": "Option 1",
+            "value": "option-1",
+            "isDeleted": false,
+            "isActive": true
+          },
+          {
+            "name": "Option 2",
+            "value": "option-2",
+            "isDeleted": false,
+            "isActive": true
+          },
+          {
+            "name": "Option 3",
+            "value": "option-3",
+            "isDeleted": false,
+            "isActive": true
+          }
+        ]
+      }
     },
   ];
 
-  modelFields: Array<Field> = [];
-  responseFields: Array<Response> = [];
 
   section: Array<Section> = [{
     "name": "Section",
     "isActive": true,
     "isDeleted": false,
-    "fields": this.responseFields
+    "fieldList": { "fieldToList": new Array<Response>() }
   }];
 
   modelsection: Array<Section> = [{
     "name": "Section",
     "isActive": true,
     "isDeleted": false,
-    "fields": this.modelFields
+    "fieldList": { "fieldToList": new Array<Field>() }
   }];
 
   model: any = {
@@ -195,7 +191,7 @@ export class EditAppComponent implements OnInit {
       textColor: "555555",
       bannerImage: ""
     },
-    attributes: this.modelsection
+    formSectionList: { attributes: this.modelsection },
 
   };
 
@@ -203,7 +199,7 @@ export class EditAppComponent implements OnInit {
     name: 'From Name',
     isActive: true,
     isDelete: false,
-    formSection: this.section,
+    formSectionList: { formSectionList: this.section },
   }
 
   report = false;
@@ -226,6 +222,7 @@ export class EditAppComponent implements OnInit {
 
   ngOnInit() {
     this.formService.getFieldTypes();
+    //this.addSection();
     // this.route.params.subscribe( params =>{
     //   console.log(params);
     //   this.us.getDataApi('/admin/getFormById',{id:params.id}).subscribe(r=>{
@@ -280,8 +277,8 @@ export class EditAppComponent implements OnInit {
       if (typeof index === "undefined") {
         index = list.length;
       }
-      list.splice(index, 0, event.data);
-      resplist.splice(index, 0, this.mapper(event.data));
+      list.splice((index == 0) ? 0 : index - 1, 0, event.data);
+      resplist.splice((index == 0) ? 0 : index - 1, 0, this.mapper(event.data));
     }
   }
 
@@ -290,7 +287,22 @@ export class EditAppComponent implements OnInit {
     this.fieldOptionList = { name: "", value: "", isActive: true, isDeleted: false };
   }
 
-  removeField(i:any , s_index:any) {
+  addSection() {
+    this.section.push({
+      "name": "New Section",
+      "isActive": true,
+      "isDeleted": false,
+      "fieldList": { "fieldToList": new Array<Response>() }
+    })
+    this.modelsection.push({
+      "name": "New Section",
+      "isActive": true,
+      "isDeleted": false,
+      "fieldList": { "fieldToList": new Array<Field>() }
+    });
+  }
+
+  removeField(i: any, s_index: any) {
     swal({
       title: 'Are you sure?',
       text: "Do you want to remove this field?",
@@ -301,11 +313,26 @@ export class EditAppComponent implements OnInit {
       confirmButtonText: 'Yes, remove!'
     }).then((result) => {
       if (result.value) {
-        this.model.attributes.splice(i, 1);
-        this.response.formSection[s_index].fields.splice(i, 1);
+        this.model.formSectionList.attributes[s_index].fieldList.fieldToList.splice(i, 1);
+        this.response.formSectionList.formSectionList[s_index].fieldList.fieldToList.splice(i, 1);
       }
     });
 
+  }
+
+  removeSection(s_index: any) {
+    swal({
+      title: 'Are you sure?',
+      text: "Do you want to remove \""+ this.response.formSectionList.formSectionList[s_index].name +"\" field?",
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#00B96F',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, remove!'
+    }).then((result) => {
+      this.response.formSectionList.formSectionList.splice(s_index, 1);
+      this.model.formSectionList.attributes.splice(s_index, 1);
+    });
   }
 
   updateForm() {
@@ -397,7 +424,7 @@ export class EditAppComponent implements OnInit {
     const value: any = event.target.value.split(' ');
     console.log(value);
     list[index].type = value[0];
-    resplist[index].field_type = value[1];
+    resplist[index].fkFieldTypeId = value[1];
   }
 
   private mapper(f: Field): any {
@@ -409,7 +436,7 @@ export class EditAppComponent implements OnInit {
     this.r.isFilterable = f.isFilterable;
     this.r.isRequired = f.isRequired;
     this.r.isSortable = f.isSortable;
-    this.r.fkFieldId = this.formService.indexOf(f.type);
+    this.r.fkFieldTypeId = this.formService.indexOf(f.type);
     this.r.fieldOptionList = f.fieldOptionList;
 
     return this.r;
