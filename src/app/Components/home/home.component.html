@@ -1,0 +1,66 @@
+<div style="padding-left: 1%">
+  <button mat-button class="save">
+    <mat-icon>add_circle</mat-icon>
+    New Form
+  </button>
+</div>
+
+<div class="column-name row" style="font-weight: bold">
+  <div class="col-1">id</div>
+  <div class="col-3">Form Name</div>
+  <div class="col-2">Created On</div>
+  <div class="col-2">Updated On</div>
+  <div class="col-2">Status</div>
+  <div class="col-1" align="center">View</div>
+  <div class="col-1" align="center">Delete</div>
+</div>
+
+<div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+  <div class="example-box row" *ngFor="let f of forms" cdkDrag>
+    <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+    <div class="col-1">
+      {{ f.id }}
+    </div>
+    <div class="col-3" style="font-weight: bold">
+      {{ f.name }}
+    </div>
+    <div class="col-2">
+      {{ f.createdOn | date }}
+    </div>
+    <div class="col-2">
+      {{ f.updatedOn | date }}
+    </div>
+    <div class="col-2">
+      <button
+        type="button"
+        Class="btn btn-success"
+        *ngIf="f.isActive == true"
+        (click)="updateStatus(f)"
+      >
+        Active
+      </button>
+      <button
+        type="button"
+        Class="btn btn-danger"
+        *ngIf="f.isActive == false"
+        (click)="updateStatus(f)"
+      >
+        InActive
+      </button>
+    </div>
+    <div class="col-1">
+      <button class="btn">
+        <i class="fa fa-eye fa-lg" style="color: rgb(60, 102, 243)"></i>
+      </button>
+    </div>
+    <div class="col-1">
+      <button class="btn">
+        <i class="fa fa-trash pull-right fa-lg"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<pre>
+  {{ form | json }}
+</pre>

@@ -1,0 +1,12 @@
+<app-loader></app-loader>
+<mat-toolbar class="mat-elevation-z8 row-md-12">
+  <div class="col-md-10">
+    <h3>Form Builder</h3>
+  </div>
+  <div class="col-md-2" align="right" *ngIf="loaderService.isBuilder">
+    <button mat-button class="save" routerLink="/formbuilder">
+      <mat-icon>add_circle</mat-icon>
+      New Form
+    </button>
+  </div>
+</mat-toolbar>

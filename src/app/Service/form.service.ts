@@ -20,9 +20,12 @@ export class FormService {
     const headers = { 'Content-Type': 'application/json' };
     const body = json ;
     this.http.post<any>('http://localhost:8080/form/addForm', body, { headers }).subscribe(data => {
-      console.log(data)
-      alert("Done");
+      alert("Success! From Submitted");
     });
+  }
+
+  getAllForms(){
+    return this.http.get<any>('http://localhost:8080/form/list');
   }
 
   indexOf(name: string): any {

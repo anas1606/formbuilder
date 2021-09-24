@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DndDropEvent, DropEffect } from 'ngx-drag-drop';
 import swal from 'sweetalert2';
 import { BreakpointObserver } from '@angular/cdk/layout';
@@ -6,20 +6,22 @@ import { MatSidenav } from '@angular/material/sidenav';
 import { delay } from 'rxjs/operators';
 import { FormService } from 'src/app/Service/form.service';
 import { Field, Response, Section, value } from 'src/app/global.model';
+import { LoaderService } from 'src/app/Service/loader.service';
 
 @Component({
   selector: 'app-form-builder',
   templateUrl: './form-builder.component.html',
   styleUrls: ['./form-builder.component.css']
 })
-export class FormBuilderComponent implements OnInit {
+export class FormBuilderComponent implements OnInit, OnDestroy {
 
   @ViewChild(MatSidenav)
   sidenav!: MatSidenav;
 
   constructor(
     private observer: BreakpointObserver,
-    public formService: FormService
+    private formService: FormService,
+    private loaderService: LoaderService
   ) { }
 
   private r = new Response();
@@ -222,19 +224,7 @@ export class FormBuilderComponent implements OnInit {
 
   ngOnInit() {
     this.formService.getFieldTypes();
-    //this.addSection();
-    // this.route.params.subscribe( params =>{
-    //   console.log(params);
-    //   this.us.getDataApi('/admin/getFormById',{id:params.id}).subscribe(r=>{
-    //     console.log(r);
-    //     this.model = r['data'];
-    //   });
-    // });
-
-
-    // this.model = this.cs.data;
-    // console.log(this.model.data);
-
+    this.loaderService.isBuilder = false;
   }
 
   onDragStart(event: DragEvent) {
@@ -289,13 +279,13 @@ export class FormBuilderComponent implements OnInit {
 
   addSection() {
     this.section.push({
-      "name": "New Section",
+      "name": "Section",
       "isActive": true,
       "isDeleted": false,
       "fieldList": { "fieldToList": new Array<Response>() }
     })
     this.modelsection.push({
-      "name": "New Section",
+      "name": "Section",
       "isActive": true,
       "isDeleted": false,
       "fieldList": { "fieldToList": new Array<Field>() }
@@ -308,8 +298,8 @@ export class FormBuilderComponent implements OnInit {
       text: "Do you want to remove this field?",
       type: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#00B96F',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#00B96F',
       confirmButtonText: 'Yes, remove!'
     }).then((result) => {
       if (result.value) {
@@ -326,12 +316,14 @@ export class FormBuilderComponent implements OnInit {
       text: "Do you want to remove \"" + this.response.formSectionList.formSectionList[s_index].name + "\" field?",
       type: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#00B96F',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#00B96F',
       confirmButtonText: 'Yes, remove!'
     }).then((result) => {
-      this.response.formSectionList.formSectionList.splice(s_index, 1);
-      this.model.formSectionList.attributes.splice(s_index, 1);
+      if (result.value) {
+        this.response.formSectionList.formSectionList.splice(s_index, 1);
+        this.model.formSectionList.attributes.splice(s_index, 1);
+      }
     });
   }
 
@@ -352,7 +344,8 @@ export class FormBuilderComponent implements OnInit {
   }
 
   clearForm() {
-    this.model.attributes = [];
+    this.model.formSectionList.formSectionList = [];
+    this.response.formSectionList.formSectionList = [];
   }
 
   initReport() {
@@ -378,47 +371,19 @@ export class FormBuilderComponent implements OnInit {
   }
 
   submit() {
-    /*let valid = true;
-    let validationArray = JSON.parse(JSON.stringify(this.model.attributes));
-    validationArray.reverse().forEach(field => {
-      console.log(field.label + '=>' + field.required + "=>" + field.value);
-      if (field.required && !field.value && field.type != 'checkbox') {
-        swal('Error', 'Please enter ' + field.label, 'error');
-        valid = false;
-        return false;
+    swal({
+      title: 'Are you sure?',
+      text: "Do you want to Save this Form?",
+      type: 'info',
+      showCancelButton: true,
+      confirmButtonColor: '#00B96F',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, Save!'
+    }).then((result) => {
+      if (result.value) {
+        this.formService.saveForm(this.response);
       }
-      if (field.required && field.regex) {
-        let regex = new RegExp(field.regex);
-        if (regex.test(field.value) == false) {
-          swal('Error', field.errorText, 'error');
-          valid = false;
-          return false;
-        }
-      }
-      if (field.required && field.type == 'checkbox') {
-        if (field.values.filter(r => r.selected).length == 0) {
-          swal('Error', 'Please enterrr ' + field.label, 'error');
-          valid = false;
-          return false;
-        }
-
-      }
-    });
-    if (!valid) {
-      return false;
-    }
-    console.log('Save', this.model);
-    let input = new FormData;
-    input.append('formId', this.model._id);
-    input.append('attributes', JSON.stringify(this.model.attributes))
-    // this.us.postDataApi('/user/formFill',input).subscribe(r=>{
-    //   console.log(r);
-    //   swal('Success','You have contact sucessfully','success');
-    //   this.success = true;
-    // },error=>{
-    //   swal('Error',error.message,'error');
-    // }); */
-    this.formService.saveForm(this.response);
+    })
   }
 
   change(event: any, index: any, list?: any[], resplist?: any[]) {
@@ -426,6 +391,10 @@ export class FormBuilderComponent implements OnInit {
     console.log(value);
     list[index].type = value[0];
     resplist[index].fkFieldTypeId = value[1];
+  }
+
+  ngOnDestroy(): void {
+    this.loaderService.isBuilder = true;
   }
 
   private mapper(f: Field): any {

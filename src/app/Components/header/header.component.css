@@ -1,0 +1,11 @@
+mat-toolbar {
+    background: rgb(224, 221, 221);
+    color: #002b5c;
+  }
+  
+  .save {
+    background-color: #002b5c;
+    color: white;
+    padding: 5px;
+  }
+  

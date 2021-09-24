@@ -1,7 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterModule, Routes} from '@angular/router';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DndModule } from 'ngx-drag-drop';
@@ -18,19 +17,21 @@ import { FormBuilderComponent } from './Components/form-builder/form-builder.com
 import { LoaderComponent } from './Components/loader/loader.component';
 import { LoaderService } from './Service/loader.service';
 import { HttpInterceptorService } from './Service/http-interceptor.service';
-
-const appRoutes: Routes = [
-  { path: '', component: FormBuilderComponent },
-];
+import { HomeComponent } from './Components/home/home.component';
+import { HeaderComponent } from './Components/header/header.component';
+import { MatTableModule } from '@angular/material/table';
+import { MatSortModule } from '@angular/material/sort';
+import {DragDropModule} from '@angular/cdk/drag-drop';
 
 @NgModule({
   declarations: [
     AppComponent,
     FormBuilderComponent,
     LoaderComponent,
+    HomeComponent,
+    HeaderComponent,
   ],
   imports: [
-    RouterModule.forRoot(appRoutes),
     SweetAlert2Module.forRoot(),
     HttpClientModule,
     BrowserModule,
@@ -43,6 +44,9 @@ const appRoutes: Routes = [
     MatButtonModule,
     MatIconModule,
     MatDividerModule,
+    MatTableModule,
+    MatSortModule,
+    DragDropModule
   ],
   providers: [
     FormService,

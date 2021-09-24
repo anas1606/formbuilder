@@ -8,7 +8,8 @@ export class LoaderService {
 
   constructor() { }
   isLoading = new Subject<boolean>();
-  
+  isBuilder : boolean = true;
+
   show() {
     this.isLoading.next(true);
   }

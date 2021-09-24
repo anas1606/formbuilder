@@ -1,5 +1,6 @@
 <app-loader></app-loader>
-<mat-toolbar class="mat-elevation-z8">
+<mat-toolbar class="row-md-12">
+  
   <button
     mat-icon-button
     *ngIf="sidenav.mode === 'over'"
@@ -9,10 +10,6 @@
     <mat-icon *ngIf="sidenav.opened"> close </mat-icon>
   </button>
 
-  <h1>Form Builder</h1>
-</mat-toolbar>
-
-<mat-toolbar class="row-md-12">
   <div class="col-md-8" align="left">
     <input
       class="form-control formname"
@@ -21,12 +18,14 @@
       [(ngModel)]="response.name"
     />
   </div>
+
   <div class="col-md-4" align="right">
-    <button mat-button class="save" (click) = "submit()">
+    <button mat-button class="save" (click)="submit()">
       <mat-icon>save</mat-icon>
       Save Form
     </button>
   </div>
+
 </mat-toolbar>
 
 <mat-sidenav-container>
@@ -45,7 +44,7 @@
         <span class="label">{{ item.label }}</span>
       </div>
     </div>
-    <div class="field field-flex pointer shadow-bg" (click) = "addSection()">
+    <div class="field field-flex pointer shadow-bg" (click)="addSection()">
       <i class="fa fa-th pull-left"></i>
       <span class="label">Add Section</span>
     </div>
@@ -76,15 +75,13 @@
         [style.backgroundColor]="model.theme.bgColor"
         [style.color]="model.theme.textColor"
       >
-        <div class="row" style="width: 100%;">
+        <div class="row" style="width: 100%">
           <div class="form-group col-6">
             <input class="form-control" type="text" [(ngModel)]="s.name" />
           </div>
 
           <div class="form-group col-2" align="right">
-            <Label>
-              Status
-            </Label>
+            <Label> Status </Label>
           </div>
           <div class="form-group col-2" align="left">
             <i
@@ -99,10 +96,7 @@
             ></i>
           </div>
           <div class="form-group col-2" align="right">
-            <i
-              (click)="removeSection(s_index)"
-              class="fa fa-trash fa-lg"
-            ></i>
+            <i (click)="removeSection(s_index)" class="fa fa-trash fa-lg"></i>
           </div>
         </div>
 
@@ -203,7 +197,7 @@
                   <option
                     *ngFor="let v of item.fieldOptionList.fieldOptionList"
                     [value]="v.value"
-                    style="background-color: #002b5c; color: white;"
+                    style="background-color: #002b5c; color: white"
                   >
                     {{ v.name }}
                   </option>
@@ -392,7 +386,7 @@
               >
                 <option
                   class="form-control"
-                  style="background-color: #002b5c; color: white;"
+                  style="background-color: #002b5c; color: white"
                   *ngFor="let type of formService.type"
                   value="{{ type.name + ' ' + type.id | lowercase }}"
                 >
